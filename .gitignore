@@ -1,0 +1,13 @@
+# pasta de dependências do Node.js
+node_modules
+
+# arquivo de ambiente
+.env
+
+# pasta de dados do PostgreSQL
+postgres_data/
+
+# logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*

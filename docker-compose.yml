@@ -1,0 +1,12 @@
+services:
+  postgres:
+    image: postgres:15
+    restart: always
+    environment:
+      - POSTGRES_USER=lunchonett-postgre
+      - POSTGRES_PASSWORD=qu%qgAuJ&w*8*CK
+      - POSTGRES_DB=lanchonete_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./postgres_data:/var/lib/postgresql/data
