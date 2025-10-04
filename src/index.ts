@@ -1,6 +1,9 @@
 import Fastify from 'fastify'; // importando o framework fastify
 import { PrismaClient } from "../generated/prisma"; // importa o prismaClient gerado para mexer no bano
 
+import sensible from '@fastify/sensible'; // biblioteca para enviar respostas com erros de forma simples
+import { errorHandler } from './middlewares/errorHandler';
+
 // inicializa o fastify e coloca a instância em app
 const app = Fastify({
   	logger: process.env.NODE_ENV !== 'production', // habilita o logger de debug, apenas em dev
@@ -11,6 +14,10 @@ const app = Fastify({
  quando a primeira query for feita com o client, aí sim ele vai se conectar e manter aberto. porém, isso é uma pratica ruim, pois queremos
  saber de imediato se o banco está OK ou não, para isso forçamos um conexão ao banco ANTES de iniciar o backend */
 const prisma_db = new PrismaClient();
+
+app.register(sensible); // registra o sensible (mesmo que app.use)
+
+app.setErrorHandler(errorHandler); // setErrorHandler é uma função nativa do fastify, que registra um error handler.
 
 // cria a primeira rota de teste
 app.get('/', async (request, reply) => {
