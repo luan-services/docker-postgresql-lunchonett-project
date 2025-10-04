@@ -1,0 +1,19 @@
+{
+  "compileroptions": {
+    // onde encontrar e para onde enviar os arquivos 
+    "rootDir": "./src",                 // onde o código fonte TypeScript está
+    "outDir": "./dist",                 // onde o JavaScript compilado será salvo
+
+    // configurações do Módulo e da linguagem 
+    "module": "NodeNext",               // o sistema de módulos mais moderno para Node.js (suporta import/export).
+    "target": "ES2022",                 
+    "moduleresolution": "NodeNext",     // como o TypeScript encontra os módulos.
+
+    // regras de qualidade de código
+    "strict": true,                     // habilita todas as checagens estritas.
+    "esModuleInterop": true,            // garante compatibilidade com módulos mais antigos.
+    "forceconsistentcasingInFileNames": true,
+    "skiplibcheck": true
+  },
+  "include": ["src/**/*"] // diz ao compilador para incluir todos os arquivos dentro da pasta 'src'.
+}

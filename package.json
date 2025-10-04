@@ -4,10 +4,29 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "tsx watch src/index.ts",
+    "build": "tsc",
+    "start": "node dist/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/luan-services/docker-postgresql-lunchonett-project.git"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "description": ""
+  "bugs": {
+    "url": "https://github.com/luan-services/docker-postgresql-lunchonett-project/issues"
+  },
+  "homepage": "https://github.com/luan-services/docker-postgresql-lunchonett-project#readme",
+  "description": "",
+  "devDependencies": {
+    "@types/node": "^24.6.2",
+    "prisma": "^6.16.3",
+    "tsx": "^4.20.6",
+    "typescript": "^5.9.3"
+  },
+  "dependencies": {
+    "@prisma/client": "^6.16.3"
+  }
 }
