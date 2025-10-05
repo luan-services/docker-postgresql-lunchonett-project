@@ -2,7 +2,11 @@ import Fastify from 'fastify'; // importando o framework fastify
 import { PrismaClient } from "../generated/prisma"; // importa o prismaClient gerado para mexer no bano
 
 import sensible from '@fastify/sensible'; // biblioteca para enviar respostas com erros de forma simples
-import { errorHandler } from './middlewares/errorHandler';
+import { errorHandler } from './middlewares/errorHandler'; // importa a função errorHandler
+
+import { configDotenv } from 'dotenv';
+
+configDotenv();
 
 // inicializa o fastify e coloca a instância em app
 const app = Fastify({
@@ -16,8 +20,7 @@ const app = Fastify({
 const prisma_db = new PrismaClient();
 
 app.register(sensible); // registra o sensible (mesmo que app.use)
-
-app.setErrorHandler(errorHandler); // setErrorHandler é uma função nativa do fastify, que registra um error handler.
+app.setErrorHandler(errorHandler); // setErrorHandler é uma função nativa do fastify, que registra uma função error handler.
 
 // cria a primeira rota de teste
 app.get('/', async (request, reply) => {
