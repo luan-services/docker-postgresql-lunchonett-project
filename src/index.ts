@@ -6,6 +6,8 @@ import { errorHandler } from './middlewares/errorHandler'; // importa a função
 
 import { configDotenv } from 'dotenv';
 
+import { authRoutes } from './routes/authRoutes';
+
 configDotenv();
 
 // inicializa o fastify e coloca a instância em app
@@ -21,6 +23,9 @@ const prisma_db = new PrismaClient();
 
 app.register(sensible); // registra o sensible (mesmo que app.use)
 app.setErrorHandler(errorHandler); // setErrorHandler é uma função nativa do fastify, que registra uma função error handler.
+
+// <-- 2. Registrar o plugin de rotas com o prefixo '/auth'
+app.register(authRoutes, { prefix: '/auth' });
 
 // cria a primeira rota de teste
 app.get('/', async (request, reply) => {
