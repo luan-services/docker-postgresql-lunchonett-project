@@ -8,6 +8,8 @@ import { configDotenv } from 'dotenv';
 
 import { authRoutes } from './routes/authRoutes'; // importa as rotas de auth
 
+import { validatorCompiler, serializerCompiler } from 'fastify-type-provider-zod' // plugin do fastify que valida os schemas do zod (é necessário pois o plugin nativo do fastify só valida json, precisa desse pro zod)
+
 configDotenv();
 
 // inicializa o fastify e coloca a instância em app
@@ -23,6 +25,9 @@ const prisma_db = new PrismaClient();
 
 app.register(sensible); // registra o sensible (mesmo que app.use)
 app.setErrorHandler(errorHandler); // setErrorHandler é uma função nativa do fastify, que registra uma função error handler.
+
+app.setValidatorCompiler(validatorCompiler); // aqui usamos o plugin type provider do zod
+app.setSerializerCompiler(serializerCompiler); // aqui usamos o plugin type provider do zod
 
 // registra um plugin (cria uma rota, com prefixo /auth que usa os routes de auth)
 app.register(authRoutes, { prefix: '/auth' });
