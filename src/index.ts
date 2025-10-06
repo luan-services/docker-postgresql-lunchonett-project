@@ -15,7 +15,7 @@ configDotenv();
 // inicializa o fastify e coloca a instância em app
 const app = Fastify({
   	logger: process.env.NODE_ENV !== 'production', // habilita o logger de debug, apenas em dev
-});
+})
 
 /* inicializa uma instância do prismaClient(), usaremos essa instância para fazer os pedidos ao banco de dados, é como se fosse o mongoose
  diferente do mongoose, com o prisma, não é necessário se conectar ao banco de dados antes de rodar a aplicação, apenas iniciar o client,
@@ -30,7 +30,7 @@ app.setValidatorCompiler(validatorCompiler); // aqui usamos o plugin type provid
 app.setSerializerCompiler(serializerCompiler); // aqui usamos o plugin type provider do zod
 
 // registra um plugin (cria uma rota, com prefixo /auth que usa os routes de auth)
-app.register(authRoutes, { prefix: '/auth' });
+app.register(authRoutes, { prefix: 'api/auth' });
 
 // cria a primeira rota de teste
 app.get('/', async (request, reply) => {
