@@ -15,7 +15,7 @@ datasource db {
 }
 
 model User {
-	id        String   @id @default(cuid())
+	id        String   @id @default(uuid())
 	email     String   @unique
 	password  String
 	name      String
@@ -30,7 +30,7 @@ model User {
 }
 
 model Product {
-	id          String   @id @default(cuid())
+	id          String   @id @default(uuid())
 	name        String
 	description String?
 	price       Decimal
@@ -45,7 +45,7 @@ model Product {
 }
 
 model Order {
-	id           String    @id @default(cuid())
+	id           String    @id @default(uuid())
 	total        Decimal
 	status       String    @default("PENDING") // ex: PENDING, PREPARING, DELIVERING, COMPLETED
 	observations String?   
@@ -61,7 +61,7 @@ model Order {
 }
 
 model OrderItem {
-	id        String @id @default(cuid())
+	id        String @id @default(uuid())
 	quantity  Int    // quantidade deste item no pedido
 
 	// relações
