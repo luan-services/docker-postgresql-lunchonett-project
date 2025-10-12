@@ -12,4 +12,5 @@ const globalForPrisma = globalThis as unknown as { prisma?: PrismaClient };
  porém, isso é uma pratica ruim, pois queremos saber de imediato se o banco está OK ou não, para isso forçamos um conexão ao banco ANTES de iniciar o backend */
 export const prisma_db = globalForPrisma.prisma || new PrismaClient({log: ['query', 'error', 'warn'],});
 
+// em dev, impede a criação de outras instancias por causa do hot reload (não precisa em prod)
 if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma_db;

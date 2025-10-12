@@ -2,7 +2,7 @@ import { FastifyReply } from "fastify/types/reply"; // type do Request do Fastif
 import { FastifyRequest } from "fastify/types/request"; // type do Reply
 import { UserRegisterInput, UserLoginInput } from "../schemas/authSchemas"; // importamos a tipagem do requests do zod para não ter error no TypeScript
 
-import { prisma_db } from "../utils/prisma";
+import { prisma_db } from "../lib/prisma";
 import bcrypt from "bcrypt"; // library de hashing de senhas
 
 //@desc Register a user

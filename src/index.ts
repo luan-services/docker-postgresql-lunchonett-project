@@ -1,9 +1,9 @@
 import Fastify from 'fastify'; // importando o framework fastify
 
-import { prisma_db } from './utils/prisma'; // importa a instância do prisma de utils
+import { prisma_db } from './lib/prisma'; // importa a instância do prisma de utils
 
 import sensible from '@fastify/sensible'; // biblioteca para enviar respostas com erros de forma simples
-import { errorHandler } from './middlewares/errorHandler'; // importa a função errorHandler
+import { errorHandler } from './lib/errorHandler'; // importa a função errorHandler
 
 import { configDotenv } from 'dotenv';
 
