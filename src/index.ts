@@ -3,6 +3,7 @@ import Fastify from 'fastify'; // importando o framework fastify
 import { prisma_db } from './lib/prisma'; // importa a instância do prisma de utils
 
 import sensible from '@fastify/sensible'; // biblioteca para enviar respostas com erros de forma simples
+
 import { errorHandler } from './lib/errorHandler'; // importa a função errorHandler
 
 import { configDotenv } from 'dotenv';
@@ -10,6 +11,9 @@ import { configDotenv } from 'dotenv';
 import { authRoutes } from './routes/authRoutes'; // importa as rotas de auth
 
 import { validatorCompiler, serializerCompiler } from 'fastify-type-provider-zod' // plugin do fastify que valida os schemas do zod (é necessário pois o plugin nativo do fastify só valida json, precisa desse pro zod)
+
+import cookie from "@fastify/cookie"
+
 
 configDotenv();
 
@@ -19,6 +23,12 @@ const app = Fastify({
 })
 
 app.register(sensible); // registra o sensible (mesmo que app.use)
+
+app.register(cookie, {
+    secret: process.env.COOKIE_SECRET, // adiciona um segredo para cookies que podem ser lidos (o cookie com o token CSRF)
+    hook: "onRequest", // configura quando os cookies são enviados, se não adicionar esse campo, o padrão é "onRequest"
+})
+
 app.setErrorHandler(errorHandler); // setErrorHandler é uma função nativa do fastify, que registra uma função error handler.
 
 app.setValidatorCompiler(validatorCompiler); // aqui usamos o plugin type provider do zod
