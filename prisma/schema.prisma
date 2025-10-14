@@ -27,6 +27,19 @@ model User {
 	updatedAt DateTime @updatedAt
 
 	orders Order[] // relação: um usuário pode ter vários pedidos
+
+	sessions Session[] // relação: um usuário pode ter várias sessões
+}
+
+model Session {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [id], references: [id])
+  refreshHash String
+  userAgent   String?
+  ip          String?
+  expiresAt   DateTime
+  createdAt   DateTime @default(now())
 }
 
 model Product {
