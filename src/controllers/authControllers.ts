@@ -199,8 +199,10 @@ export const logoutHandler = async (req: FastifyRequest, reply: FastifyReply) =>
 	}
 
 	if (!refreshToken) {
-		// reply.code(401).send({statusCode: 401, error: "Unauthorized", message: "Invalid or expired token"})
-		return reply.unauthorized("Invalid or expired token");
+		reply.clearCookie("accessToken");
+		reply.clearCookie("refreshToken");
+		reply.clearCookie("csrfToken");
+		return reply.code(200).send({ message: "Logged out successfully (no active session)" });
 	}
 
 	try {
@@ -214,6 +216,40 @@ export const logoutHandler = async (req: FastifyRequest, reply: FastifyReply) =>
 		reply.clearCookie("csrfToken");
 
 		return reply.code(200).send({ message: "Logged out successfully" });
+	} catch {
+		return reply.unauthorized("Invalid refresh token");
+	}
+};
+
+//@desc Logout a user from all sessions
+//@route POST /api/auth/logout_all
+//@access private
+export const logoutAllHandler = async (req: FastifyRequest, reply: FastifyReply) => {
+	const refreshToken = req.cookies.refreshToken;
+	const REFRESH_TOKEN_SECRET = process.env.REFRESH_TOKEN_SECRET;
+
+	if (!REFRESH_TOKEN_SECRET) {
+		// reply.code(401).send({statusCode: 401, error: "Not Found", message: "accessToken or refreshToken secret is not defined in environment variables."})
+		return reply.notFound("refreshToken secret is not defined in environment variables.");
+	}
+
+	if (!refreshToken) {
+		reply.clearCookie("accessToken");
+		reply.clearCookie("refreshToken");
+		reply.clearCookie("csrfToken");
+		return reply.code(200).send({ message: "Logged out successfully (no active session)" });
+	}
+
+	try {
+		const payload = jwt.verify(refreshToken, REFRESH_TOKEN_SECRET) as { userId: string };
+
+		await prisma_db.session.deleteMany({ where: { userId: payload.userId } }); // deleta todas as sessões do usuário 
+
+		reply.clearCookie("accessToken");
+		reply.clearCookie("refreshToken");
+		reply.clearCookie("csrfToken");
+
+		return reply.code(200).send({ message: "All sessions logged out" });
 	} catch {
 		return reply.unauthorized("Invalid refresh token");
 	}
