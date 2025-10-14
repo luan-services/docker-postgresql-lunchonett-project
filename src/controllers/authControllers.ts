@@ -143,7 +143,7 @@ export const refreshTokenHandler = async (req: FastifyRequest, reply: FastifyRep
 
 		// verifica se o refreshToken recebido bate com o hash do db
 		const valid = await bcrypt.compare(refreshToken, session.refreshHash);
-		
+
 		if (!valid) {
 			await prisma_db.session.delete({ where: { id: session.id } }); // segurança
 			// reply.code(401).send({statusCode: 401, error: "Unauthorized", message: "Invalid token or expired session"})
@@ -161,6 +161,7 @@ export const refreshTokenHandler = async (req: FastifyRequest, reply: FastifyRep
 		const newAccessToken = jwt.sign({ userId: payload.userId }, ACCESS_TOKEN_SECRET, {
 			expiresIn: "15m",
 		});
+		const newCsrfToken = randomUUID();
 
 		reply.setCookie("accessToken", newAccessToken, {
 			httpOnly: true,
@@ -168,6 +169,13 @@ export const refreshTokenHandler = async (req: FastifyRequest, reply: FastifyRep
 			sameSite: "lax",
 			path: "/",
 			maxAge: 60 * 15,
+		});
+
+		reply.setCookie("csrfToken", newCsrfToken, {
+		httpOnly: false,
+		secure: process.env.NODE_ENV === "production",
+		sameSite: "lax",
+		path: "/",
 		});
 
 		return reply.code(200).send({ message: "Access token refreshed" });
