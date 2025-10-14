@@ -15,8 +15,8 @@ export async function verifyAccess(request: FastifyRequest, reply: FastifyReply)
 	const token = request.cookies.accessToken;
 
 	if (!token) {
-		// reply.code(403).send({statusCode: 403, error: "Forbidden", message: "Invalid or expired token"})
-		return reply.forbidden("Invalid or expired token");
+		// reply.code(401).send({statusCode: 401, error: "Unauthorized", message: "Invalid or expired token"})
+		return reply.unauthorized("Invalid or expired token");
 	}
 
 	let decoded;
@@ -24,15 +24,15 @@ export async function verifyAccess(request: FastifyRequest, reply: FastifyReply)
 	try {
 		decoded = jwt.verify(token, ACCESS_TOKEN_SECRET) as { userId: string }; // decodifiga o token e diz que o token possui um campo 'userId'
 	} catch {
-		// reply.code(403).send({statusCode: 403, error: "Forbidden", message: "Invalid or expired token"})
-		return reply.forbidden("Invalid or expired token");
+		// reply.code(401).send({statusCode: 401, error: "Unauthorized", message: "Invalid or expired token"})
+		return reply.unauthorized("Invalid or expired token");
 	}
 
 	const userExists = await prisma_db.user.findUnique({where: {id: decoded.userId}});
 
 	if (!userExists) { // impede que usuários que já foram deletados mas possuem tokens ativos consigam ser autenticados
-		// reply.code(403).send({statusCode: 403, error: "Forbidden", message: "Invalid or expired token"})
-		return reply.forbidden("Invalid or expired token");
+		// reply.code(401).send({statusCode: 401, error: "Unauthorized", message: "Invalid or expired token"})
+		return reply.unauthorized("Invalid or expired token");
 	};
 
 	request.user = { id: decoded.userId }; // para para o campo user do request o userId que está dentro do token decodificado;

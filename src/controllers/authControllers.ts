@@ -110,3 +110,70 @@ export const userLoginHandler = async (request:FastifyRequest<{Body: UserLoginIn
     return reply.code(200).send({message: `User ${email} logged in successfully`});
 
 }
+
+//@desc Refresh user session
+//@route POST /api/auth/refresh
+//@access public
+export const refreshTokenHandler = async (req: FastifyRequest, reply: FastifyReply) => {
+	const refreshToken = req.cookies.refreshToken;
+	const REFRESH_TOKEN_SECRET = process.env.REFRESH_TOKEN_SECRET;
+	const ACCESS_TOKEN_SECRET = process.env.ACCESS_SECRET;
+
+	if (!REFRESH_TOKEN_SECRET || !ACCESS_TOKEN_SECRET) {
+		// reply.code(401).send({statusCode: 401, error: "Not Found", message: "accessToken or refreshToken secret is not defined in environment variables."})
+		return reply.notFound("accessToken or refreshToken secret is not defined in environment variables.");
+	}
+
+	if (!refreshToken) {
+		// reply.code(401).send({statusCode: 401, error: "Unauthorized", message: "Invalid token or expired session"})
+		return reply.unauthorized("Invalid token or expired session");
+	}
+
+	try {
+		const payload = jwt.verify(refreshToken, REFRESH_TOKEN_SECRET) as {userId: string; tokenId: string;};
+
+		const session = await prisma_db.session.findUnique({
+			where: { tokenId: payload.tokenId },
+		});
+
+		if (!session) {
+			// reply.code(401).send({statusCode: 401, error: "Unauthorized", message: "Invalid token or expired session"})
+			return reply.unauthorized("Invalid token or expired session");
+		}
+
+		// verifica se o refreshToken recebido bate com o hash do db
+		const valid = await bcrypt.compare(refreshToken, session.refreshHash);
+		
+		if (!valid) {
+			await prisma_db.session.delete({ where: { id: session.id } }); // segurança
+			// reply.code(401).send({statusCode: 401, error: "Unauthorized", message: "Invalid token or expired session"})
+			return reply.unauthorized("Invalid token or expired session");
+		}
+
+		// verifica expiração
+		if (session.expiresAt < new Date()) {
+			await prisma_db.session.delete({ where: { id: session.id } });
+			// reply.code(401).send({statusCode: 401, error: "Unauthorized", message: "Invalid token or expired session"})
+			return reply.unauthorized("Invalid token or expired session");
+		}
+
+		// gera novo access token
+		const newAccessToken = jwt.sign({ userId: payload.userId }, ACCESS_TOKEN_SECRET, {
+			expiresIn: "15m",
+		});
+
+		reply.setCookie("accessToken", newAccessToken, {
+			httpOnly: true,
+			secure: process.env.NODE_ENV === "production",
+			sameSite: "lax",
+			path: "/",
+			maxAge: 60 * 15,
+		});
+
+		return reply.code(200).send({ message: "Access token refreshed" });
+	} catch (err) {
+		// reply.code(401).send({statusCode: 401, error: "Unauthorized", message: "Invalid token or expired session"})
+		return reply.unauthorized("Invalid token or expired session");
+	}
+};
+
