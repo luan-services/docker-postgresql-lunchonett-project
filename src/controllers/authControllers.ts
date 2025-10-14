@@ -189,7 +189,7 @@ export const refreshTokenHandler = async (req: FastifyRequest, reply: FastifyRep
 //@desc Logout a user
 //@route POST /api/auth/logout
 //@access private
-export const logoutHandler = async (req: FastifyRequest, reply: FastifyReply) => {
+export const userLogoutHandler = async (req: FastifyRequest, reply: FastifyReply) => {
 	const refreshToken = req.cookies.refreshToken;
 	const REFRESH_TOKEN_SECRET = process.env.REFRESH_TOKEN_SECRET;
 
@@ -224,7 +224,7 @@ export const logoutHandler = async (req: FastifyRequest, reply: FastifyReply) =>
 //@desc Logout a user from all sessions
 //@route POST /api/auth/logout_all
 //@access private
-export const logoutAllHandler = async (req: FastifyRequest, reply: FastifyReply) => {
+export const userLogoutAllHandler = async (req: FastifyRequest, reply: FastifyReply) => {
 	const refreshToken = req.cookies.refreshToken;
 	const REFRESH_TOKEN_SECRET = process.env.REFRESH_TOKEN_SECRET;
 
