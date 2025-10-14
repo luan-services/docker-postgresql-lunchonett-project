@@ -68,15 +68,17 @@ export const userLoginHandler = async (request:FastifyRequest<{Body: UserLoginIn
     }
 
     // gera tokens
+	const tokenId = randomUUID(); // token para buscar sessões do refreshToken rapidamente
     const accessToken = jwt.sign({userId: userExists.id}, ACCESS_TOKEN_SECRET, { expiresIn: "15m" });
-    const refreshToken = jwt.sign({userId: userExists.id}, REFRESH_TOKEN_SECRET, { expiresIn: "7d" });
+    const refreshToken = jwt.sign({userId: userExists.id, tokenId: tokenId}, REFRESH_TOKEN_SECRET, { expiresIn: "7d" });
     const csrfToken = randomUUID();
 
     await prisma_db.session.create({ // cria uma sessão e guarda o hash do refresh no banco
         data: {
             userId: userExists.id,
             refreshHash: await bcrypt.hash(refreshToken, 10), // coloca um hash do refreshToken na sessão, para remover apenas a sessão ao fazer logout
-            userAgent: request.headers["user-agent"],
+            tokenId: tokenId,
+			userAgent: request.headers["user-agent"],
             ip: request.ip,
             expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
         },

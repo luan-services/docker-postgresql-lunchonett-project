@@ -36,6 +36,7 @@ model Session {
   userId      String
   user        User     @relation(fields: [id], references: [id])
   refreshHash String
+  tokenId     String   @unique
   userAgent   String?
   ip          String?
   expiresAt   DateTime
