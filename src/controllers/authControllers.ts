@@ -113,7 +113,7 @@ export const userLoginHandler = async (request:FastifyRequest<{Body: UserLoginIn
 
 //@desc Refresh user session
 //@route POST /api/auth/refresh
-//@access public
+//@access private
 export const refreshTokenHandler = async (req: FastifyRequest, reply: FastifyReply) => {
 	const refreshToken = req.cookies.refreshToken;
 	const REFRESH_TOKEN_SECRET = process.env.REFRESH_TOKEN_SECRET;
@@ -183,5 +183,38 @@ export const refreshTokenHandler = async (req: FastifyRequest, reply: FastifyRep
 		// reply.code(401).send({statusCode: 401, error: "Unauthorized", message: "Invalid token or expired session"})
 		return reply.unauthorized("Invalid token or expired session");
 	}
-};
+}
 
+
+//@desc Logout a user
+//@route POST /api/auth/logout
+//@access private
+export const logoutHandler = async (req: FastifyRequest, reply: FastifyReply) => {
+	const refreshToken = req.cookies.refreshToken;
+	const REFRESH_TOKEN_SECRET = process.env.REFRESH_TOKEN_SECRET;
+
+	if (!REFRESH_TOKEN_SECRET) {
+		// reply.code(401).send({statusCode: 401, error: "Not Found", message: "accessToken or refreshToken secret is not defined in environment variables."})
+		return reply.notFound("refreshToken secret is not defined in environment variables.");
+	}
+
+	if (!refreshToken) {
+		// reply.code(401).send({statusCode: 401, error: "Unauthorized", message: "Invalid or expired token"})
+		return reply.unauthorized("Invalid or expired token");
+	}
+
+	try {
+		const payload = jwt.verify(refreshToken, REFRESH_TOKEN_SECRET) as { tokenId: string };
+
+		await prisma_db.session.delete({ where: { tokenId: payload.tokenId } }); // deleta a sessão no banco, se houver.
+
+		// limpa os cookies
+		reply.clearCookie("accessToken");
+		reply.clearCookie("refreshToken");
+		reply.clearCookie("csrfToken");
+
+		return reply.code(200).send({ message: "Logged out successfully" });
+	} catch {
+		return reply.unauthorized("Invalid refresh token");
+	}
+};
