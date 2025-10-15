@@ -10,6 +10,8 @@ import { configDotenv } from 'dotenv';
 
 import { authRoutes } from './routes/authRoutes'; // importa as rotas de auth
 
+import { userRoutes } from './routes/userRoutes'; // importa as rotas de usuário
+
 import { validatorCompiler, serializerCompiler } from 'fastify-type-provider-zod' // plugin do fastify que valida os schemas do zod (é necessário pois o plugin nativo do fastify só valida json, precisa desse pro zod)
 
 import cookie from "@fastify/cookie"
@@ -36,6 +38,9 @@ app.setSerializerCompiler(serializerCompiler); // aqui usamos o plugin type prov
 
 // registra um plugin (cria uma rota, com prefixo /auth que usa os routes de auth)
 app.register(authRoutes, { prefix: 'api/auth' });
+
+// registra um plugin (cria uma rota, com prefixo /user que usa os routes de user)
+app.register(userRoutes, {prefix: 'api/user'});
 
 // cria a primeira rota de teste
 app.get('/', async (request, reply) => {
