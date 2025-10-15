@@ -34,7 +34,7 @@ model User {
 model Session {
   id          String   @id @default(cuid())
   userId      String
-  user        User     @relation(fields: [id], references: [id])
+  user        User     @relation(fields: [userId], references: [id])
   refreshHash String
   tokenId     String   @unique
   userAgent   String?

@@ -44,7 +44,7 @@ export const userRegisterHandler = async (request:FastifyRequest<{Body: UserRegi
 export const userLoginHandler = async (request:FastifyRequest<{Body: UserLoginInput}>, reply:FastifyReply) => {
     
     const { email, password } = request.body;
-	const ACCESS_TOKEN_SECRET = process.env.ACCESS_SECRET;
+	const ACCESS_TOKEN_SECRET = process.env.ACCESS_TOKEN_SECRET;
     const REFRESH_TOKEN_SECRET = process.env.REFRESH_TOKEN_SECRET;
 
 	// como os tokens são variáveis .env, eles podem ser undefined ou strings, a função verify do jwt espera um tipo string, precisamos garantir que eles não são undefined para o typescript não dar erro.
@@ -117,7 +117,7 @@ export const userLoginHandler = async (request:FastifyRequest<{Body: UserLoginIn
 export const refreshTokenHandler = async (req: FastifyRequest, reply: FastifyReply) => {
 	const refreshToken = req.cookies.refreshToken;
 	const REFRESH_TOKEN_SECRET = process.env.REFRESH_TOKEN_SECRET;
-	const ACCESS_TOKEN_SECRET = process.env.ACCESS_SECRET;
+	const ACCESS_TOKEN_SECRET = process.env.ACCESS_TOKEN_SECRET;
 
 	if (!REFRESH_TOKEN_SECRET || !ACCESS_TOKEN_SECRET) {
 		// reply.code(401).send({statusCode: 401, error: "Not Found", message: "accessToken or refreshToken secret is not defined in environment variables."})

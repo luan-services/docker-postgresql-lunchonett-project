@@ -40,7 +40,7 @@ app.setSerializerCompiler(serializerCompiler); // aqui usamos o plugin type prov
 app.register(authRoutes, { prefix: 'api/auth' });
 
 // registra um plugin (cria uma rota, com prefixo /user que usa os routes de user)
-app.register(userRoutes, {prefix: 'api/user'});
+app.register(userRoutes, {prefix: 'api/users'});
 
 // cria a primeira rota de teste
 app.get('/', async (request, reply) => {
