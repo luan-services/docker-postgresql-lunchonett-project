@@ -16,6 +16,8 @@ import { validatorCompiler, serializerCompiler } from 'fastify-type-provider-zod
 
 import cookie from "@fastify/cookie"
 
+import cors from "@fastify/cors"; // importa a library de definir as urls que podem fazer requisições ao backend
+
 
 configDotenv();
 
@@ -30,6 +32,11 @@ app.register(cookie, {
     secret: process.env.COOKIE_SECRET, // adiciona um segredo para cookies que podem ser lidos (o cookie com o token CSRF)
     hook: "onRequest", // configura quando os cookies são enviados, se não adicionar esse campo, o padrão é "onRequest"
 })
+
+await app.register(cors, {
+	origin: process.env.NODE_ENV === "production" ? process.env.FRONTEND_ALLOWED_URL : "*",
+	credentials: true, // credentials true permite que o frontend envie cookies
+});
 
 app.setErrorHandler(errorHandler); // setErrorHandler é uma função nativa do fastify, que registra uma função error handler.
 
